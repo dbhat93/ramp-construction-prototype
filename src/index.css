@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Lausanne', 'Inter', system-ui, -apple-system, sans-serif;
+  --color-ramp-green: #c8e600;
+  --color-ramp-green-dark: #a8c200;
+  --color-ramp-sidebar: rgb(252, 251, 250);
+  --color-ramp-bg: #ffffff;
+  --color-ramp-border: #e5e5e0;
+  --color-ramp-text: rgb(46, 46, 39);
+}
