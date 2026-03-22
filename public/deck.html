@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ramp for Construction — Market & MVP Case</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #fafaf5;
+    --text: #2e2e27;
+    --accent: #c8e600;
+    --accent-dark: #a3bc00;
+    --muted: #8a8a7a;
+    --card-bg: #ffffff;
+    --card-border: #e8e8e0;
+    --red: #dc2626;
+    --green: #16a34a;
+    --blue: #2563eb;
+    --amber: #d97706;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 300;
+    background: #1a1a1a;
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 100px;
+    background: var(--bg);
+    overflow-y: auto;
+  }
+
+  .slide.active { display: flex; }
+
+  /* Title slide */
+  .slide.title-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .slide.title-slide h1 {
+    font-size: 64px;
+    font-weight: 600;
+    letter-spacing: -2px;
+    margin-bottom: 8px;
+    line-height: 1.1;
+  }
+
+  .slide.title-slide .subtitle {
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--accent);
+    margin-bottom: 48px;
+  }
+
+  .slide.title-slide .author {
+    font-size: 18px;
+    font-weight: 400;
+    color: #999;
+  }
+
+  .slide.title-slide .ramp-logo {
+    width: 80px;
+    height: 80px;
+    background: var(--accent);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 40px;
+  }
+
+  /* Content slides */
+  .slide-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .slide h2 {
+    font-size: 42px;
+    font-weight: 600;
+    letter-spacing: -1.5px;
+    line-height: 1.15;
+    margin-bottom: 8px;
+    max-width: 900px;
+  }
+
+  .slide .thesis {
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--muted);
+    margin-bottom: 40px;
+    max-width: 800px;
+    line-height: 1.5;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 2px solid var(--card-border);
+  }
+
+  td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--card-border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  td strong { font-weight: 600; }
+  td .metric { font-weight: 600; color: var(--green); }
+  td .warn { font-weight: 600; color: var(--amber); }
+  td .label { color: var(--muted); font-size: 13px; }
+
+  /* Callout cards */
+  .callout {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .callout.accent {
+    border-left: 4px solid var(--accent);
+  }
+
+  .callout.red {
+    border-left: 4px solid var(--red);
+  }
+
+  .callout.blue {
+    border-left: 4px solid var(--blue);
+  }
+
+  .callout .callout-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .callout em { color: var(--muted); font-style: italic; }
+
+  /* Stat row */
+  .stat-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    flex: 1;
+    text-align: center;
+  }
+
+  .stat-card .number {
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: -1px;
+    color: var(--text);
+  }
+
+  .stat-card .number.green { color: var(--green); }
+  .stat-card .number.amber { color: var(--amber); }
+  .stat-card .number.blue { color: var(--blue); }
+
+  .stat-card .desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Phase timeline */
+  .phase-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .phase-card {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    position: relative;
+  }
+
+  .phase-card.active-phase {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  .phase-card .phase-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent-dark);
+    margin-bottom: 6px;
+  }
+
+  .phase-card .phase-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .phase-card .phase-time {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .phase-card .phase-gate {
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 500;
+    border-top: 1px solid var(--card-border);
+    padding-top: 8px;
+    margin-top: 8px;
+  }
+
+  .phase-card .phase-gate.pending { color: var(--muted); }
+
+  /* Two-column layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 24px;
+  }
+
+  .col-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .col-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .col-card .role {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .col-card .pain {
+    font-size: 14px;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    background: #fef3c7;
+    border-radius: 8px;
+  }
+
+  .col-card .jtbd {
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text);
+    padding: 10px 14px;
+    background: #f0fdf4;
+    border-radius: 8px;
+  }
+
+  /* Persona day-in-life */
+  .day-timeline {
+    margin-top: 12px;
+  }
+
+  .day-item {
+    display: flex;
+    gap: 12px;
+    padding: 6px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .day-item .time {
+    font-weight: 500;
+    color: var(--muted);
+    min-width: 52px;
+    flex-shrink: 0;
+  }
+
+  .day-item .ramp-solve {
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  /* Bullet list */
+  ul.clean {
+    list-style: none;
+    padding: 0;
+  }
+
+  ul.clean li {
+    padding: 6px 0;
+    font-size: 15px;
+    line-height: 1.5;
+    position: relative;
+    padding-left: 24px;
+  }
+
+  ul.clean li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background: rgba(46,46,39,0.95);
+    color: #ccc;
+    font-size: 13px;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .nav .counter { font-weight: 500; }
+
+  .nav .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .nav button {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+
+  .nav button:hover { background: rgba(255,255,255,0.2); }
+  .nav button.active { background: var(--accent); color: var(--text); border-color: var(--accent); }
+
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent);
+    transition: width 0.3s ease;
+    z-index: 101;
+  }
+
+  /* Speaker notes */
+  .notes-panel {
+    position: fixed;
+    bottom: 48px;
+    right: 0;
+    width: 420px;
+    max-height: 50vh;
+    background: rgba(46,46,39,0.97);
+    color: #ddd;
+    padding: 20px 24px;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-y: auto;
+    display: none;
+    border-top-left-radius: 12px;
+    z-index: 99;
+    backdrop-filter: blur(8px);
+  }
+
+  .notes-panel.visible { display: block; }
+
+  .notes-panel .notes-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  /* Competitor cards */
+  .comp-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .comp-card h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .comp-card .comp-rev {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .comp-card .comp-owns {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .comp-card .comp-weak {
+    font-size: 13px;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+
+  .comp-card .comp-ramp {
+    font-size: 13px;
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  /* Delta table */
+  .delta-table td:first-child { color: var(--muted); }
+  .delta-table td:nth-child(2) { font-weight: 500; }
+
+  /* Risk cards */
+  .risk-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .risk-card {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+
+  .risk-card .risk-label {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--red);
+  }
+
+  .risk-card .risk-mit {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* Closing slide */
+  .slide.closing-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .closing-slide h2 {
+    font-size: 48px;
+    margin-bottom: 32px;
+    max-width: 700px;
+  }
+
+  .closing-slide .takeaways {
+    text-align: left;
+    max-width: 650px;
+  }
+
+  .closing-slide .takeaways li {
+    padding: 10px 0;
+    font-size: 20px;
+    line-height: 1.6;
+    color: #ccc;
+    padding-left: 32px;
+  }
+
+  .closing-slide .takeaways li::before {
+    color: var(--accent);
+    font-size: 20px;
+    left: 0;
+  }
+
+  .closing-slide .cta {
+    margin-top: 48px;
+    font-size: 20px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* Prototype CTA */
+  .proto-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: var(--text);
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 24px;
+    text-decoration: none;
+  }
+
+  .tension-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 0: Title -->
+  <div class="slide title-slide active" data-notes="Thanks Carl, Ellen. I'm going to walk you through a case for Ramp going deeper in construction. I'll start with the people — who we're building for and what their day looks like. Then the proof that Ramp already works for them. Then the market, the gap, the strategy, and I'll close with a working prototype. Interrupt me anytime — I'd rather this be a conversation than a presentation.">
+    <div class="ramp-logo">R</div>
+    <h1>Ramp for Construction</h1>
+    <div class="subtitle">Market & MVP Case</div>
+    <div class="author">Dhiraj Bhat &middot; March 24, 2026</div>
+  </div>
+
+  <!-- SLIDE 1: Personas — THE PEOPLE -->
+  <div class="slide" data-notes="Construction has two users with completely different days. &#10;&#10;Michael is the controller. His morning starts with yesterday's transactions in Sage — but half of them don't have cost codes because field workers didn't tag them. He spends 3 days a month just reconciling spend to job codes. He can't see project overruns until the monthly close. By then it's too late. His JTBD is: show me which project is bleeding before it's too late. &#10;&#10;Oscar is the field worker. He's at Home Depot at 6am buying concrete. He doesn't speak English as a first language. He's not downloading an app. He takes a photo of the receipt, stuffs it in his glovebox, and forgets about it. His JTBD is: let me text you the receipt and get back to work. &#10;&#10;Here's the insight: Ramp already saves companies time and money. The vertical question is whether construction-SPECIFIC time savings and construction-SPECIFIC cost savings are different enough to warrant dedicated features. Michael wants to save money through visibility. Oscar wants to save time through simplicity. Those are different product surfaces.">
+    <div class="slide-label">Slide 1 · The People</div>
+    <h2>Two users, one platform.</h2>
+    <div class="thesis">The controller buys it. The field worker makes it stick.</div>
+
+    <div class="two-col">
+      <div class="col-card">
+        <h3>Michael Scott</h3>
+        <div class="role">Controller · The buyer · Wants to save money</div>
+        <div class="day-timeline">
+          <div class="day-item"><span class="time">7:00a</span>Open Sage 300 — half of yesterday's transactions have no cost codes</div>
+          <div class="day-item"><span class="time">9:00a</span>Chase field workers for missing receipts via text and email</div>
+          <div class="day-item"><span class="time">11:00a</span>Manually reconcile card spend to project budgets in Excel</div>
+          <div class="day-item"><span class="time">2:00p</span>Discover Sunset Heights is 12% over budget — two weeks too late</div>
+        </div>
+        <div class="jtbd" style="margin-top: 14px;">"Show me which project is bleeding before it's too late."</div>
+      </div>
+      <div class="col-card">
+        <h3>Oscar Martinez</h3>
+        <div class="role">Field Worker · The end user · Wants to save time</div>
+        <div class="day-timeline">
+          <div class="day-item"><span class="time">6:00a</span>Home Depot run — buys concrete, rebar, lumber for three projects</div>
+          <div class="day-item"><span class="time">6:45a</span>Stuffs receipt in glovebox. Doesn't know which cost code applies</div>
+          <div class="day-item"><span class="time">3:00p</span>Gets text from Michael: "Where's the receipt from this morning?"</div>
+          <div class="day-item"><span class="time">5:00p</span>Takes blurry photo, texts it. Wrong project gets charged</div>
+        </div>
+        <div class="jtbd" style="margin-top: 14px;">"Let me just text you the receipt and get back to work."</div>
+      </div>
+    </div>
+
+    <div class="callout accent">
+      <div class="callout-label">The vertical question</div>
+      Ramp already saves time and money. The question: are construction-specific time savings (Oscar) and cost savings (Michael) different enough from horizontal to warrant dedicated features?
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Already in Construction — THE PROOF -->
+  <div class="slide" data-notes="Before we theorize — what's already true? Ramp has at least 7 construction customers today. All on horizontal Ramp. Zero construction-specific features. &#10;&#10;Construction One cut their AP process from 40 hours to 10. Roof Squad saves 50 hours a week. Prism Electric saved half a million dollars last year. &#10;&#10;These companies found Ramp on their own. Nobody built construction features to attract them. So Phase 0 — 'does construction work on Ramp?' — is already answered. Yes.&#10;&#10;The question is: what are they missing? Where does horizontal Ramp break for Michael and Oscar? And if it doesn't break — then construction is a GTM segment, not a product vertical. Either answer is valuable.">
+    <div class="slide-label">Slide 2 · The Proof</div>
+    <h2>Ramp is already in construction.</h2>
+    <div class="thesis">Phase 0 is validated. The data says go deeper.</div>
+
+    <table>
+      <thead>
+        <tr><th>Customer</th><th>Result</th><th>On horizontal Ramp — zero vertical features</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Construction One</strong></td><td class="metric">AP: 40 → 10 hrs/month (75% ↓)</td><td>Receipt capture, auto-coding, spend controls</td></tr>
+        <tr><td><strong>Roof Squad</strong></td><td class="metric">50+ hrs/week saved</td><td>Centralized spend management</td></tr>
+        <tr><td><strong>Prism Electric</strong></td><td class="metric">$500K/year savings</td><td>Cards + AP automation</td></tr>
+        <tr><td><strong>SAM Construction Group</strong></td><td class="metric">CFO-endorsed procurement</td><td>Drag-and-drop PO workflow</td></tr>
+        <tr><td><strong>Chutes Int'l, Valcourt, Goley Co.</strong></td><td class="label">+ additional logos</td><td></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout accent">
+      <div class="callout-label">The question this slide answers</div>
+      "Does construction work on Ramp?" — <strong>Yes.</strong> The next question: what would the vertical add that horizontal doesn't?
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Market & Why Now -->
+  <div class="slide" data-notes="Total US construction spending is $2.17 trillion. But not all of that is addressable — labor and subcontractor payments flow through payroll and AP, not cards. Card-eligible spend is roughly $650 billion across materials, equipment, fuel, and overhead. &#10;&#10;Our SAM narrows to about $130 billion: private nonresidential work, firms between $5M and $500M revenue — Ramp's sweet spot — and the ~50% of their spend that's card-eligible. &#10;&#10;For a realistic Year 3 SOM: 500 to 1,000 construction customers at $2.6M average annual card spend gets us $1.3 to $2.6 billion in card volume. At a blended 1% take rate, that's $13 to $26 million in revenue. &#10;&#10;Why now? Three converging tailwinds. $131 billion in IIJA infrastructure money still deploying. Data center construction growing 30% annually. And a labor shortage of 499,000 workers that makes efficiency tools existential, not optional.&#10;&#10;Cross-check: Home Depot Pro and Ferguson alone move $50 billion through two distributors. Our SAM is conservative. &#10;&#10;Even at half — 250 customers, $1.3M spend each — that's $3.3 million. One PM team covers its cost base. The downside is bounded.">
+    <div class="slide-label">Slide 3 · The Market</div>
+    <h2>$2.17T market, 3-12% margins.</h2>
+    <div class="thesis">Ramp's value prop is existential, not incremental.</div>
+
+    <table>
+      <thead>
+        <tr><th></th><th>Size</th><th>How we got here</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>TAM</strong></td><td><strong>$2.17T</strong></td><td>Total US construction spend (Census Bureau 2025)</td></tr>
+        <tr><td><strong>Addressable spend</strong></td><td><strong>~$650B</strong></td><td>Card-eligible: materials, equipment, fuel, overhead. Excludes labor & subs</td></tr>
+        <tr><td><strong>SAM</strong></td><td><strong>~$130B</strong></td><td>Private nonresidential × firms $5M-$500M (~35%) × card-eligible (~50%)</td></tr>
+        <tr><td><strong>SOM (Yr 3)</strong></td><td><strong>$1.3-2.6B</strong> <span class="label">card volume</span></td><td>500-1,000 customers × $2.6M avg annual card spend</td></tr>
+        <tr><td><strong>Revenue</strong></td><td><strong>$13-26M</strong></td><td>Blended 1% take rate (interchange + SaaS)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="stat-row">
+      <div class="stat-card"><div class="number blue">$131B</div><div class="desc">IIJA $ still deploying</div></div>
+      <div class="stat-card"><div class="number green">30%</div><div class="desc">Data center growth YoY</div></div>
+      <div class="stat-card"><div class="number amber">499K</div><div class="desc">Worker shortage</div></div>
+      <div class="stat-card"><div class="number amber">3-12%</div><div class="desc">Typical margins</div></div>
+    </div>
+
+    <div class="two-col" style="margin-top: 0;">
+      <div class="callout accent">
+        <div class="callout-label">Cross-check</div>
+        Home Depot Pro (~$20B) + Ferguson (~$30B) = $50B through just two distributors. Our SAM is conservative.
+      </div>
+      <div class="callout red">
+        <div class="callout-label">Sensitivity</div>
+        Even at half — 250 customers, $1.3M spend — that's <strong>$3.3M revenue</strong>. One PM team covers its cost base.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Competitive Landscape -->
+  <div class="slide" data-notes="Three competitors matter. AvidXchange owns AP automation with 8,000 construction customers — but they have no cards and no expense management. Ramp's advantage is doing all three in one platform. &#10;&#10;Procore is the 800-pound gorilla with 16,000 construction customers and a Goldman partnership. But payments is a side project for them. The right move is to partner: Ramp becomes Procore's embedded payments layer. &#10;&#10;Sage and Viewpoint own the ERP layer — deep job costing, decades of dominance. But they're legacy on-prem, slow to innovate, and have no card products. We integrate, we don't replace. &#10;&#10;One flag: Flex, formerly Flexbase, raised $225 million to be Ramp for Construction. Then they pivoted to horizontal mid-market. That's a cautionary tale worth understanding before we commit.">
+    <div class="slide-label">Slide 4 · The Competition</div>
+    <h2>Competitive landscape.</h2>
+    <div class="thesis">Three incumbents, three different threats. Ramp's wedge is the only unified card + expense + AP play.</div>
+
+    <div class="comp-row">
+      <div class="comp-card">
+        <h4>AvidXchange</h4>
+        <div class="comp-rev">AVDX · ~$400M rev · 8K construction customers</div>
+        <div class="comp-owns"><strong>Owns:</strong> AP automation</div>
+        <div class="comp-weak">No cards. No expense. AP only.</div>
+        <div class="comp-ramp">→ Ramp does AP + cards + expense in one platform</div>
+      </div>
+      <div class="comp-card">
+        <h4>Procore</h4>
+        <div class="comp-rev">$1B+ rev · 16K customers</div>
+        <div class="comp-owns"><strong>Owns:</strong> Project management. Exploring fintech (Goldman)</div>
+        <div class="comp-weak">Fintech is a side project, not core competency.</div>
+        <div class="comp-ramp">→ Partner, don't compete. Become their payments layer</div>
+      </div>
+      <div class="comp-card">
+        <h4>Sage / Viewpoint</h4>
+        <div class="comp-rev">Construction ERP incumbents</div>
+        <div class="comp-owns"><strong>Owns:</strong> Job costing. Decades of lock-in</div>
+        <div class="comp-weak">Legacy on-prem. Slow to innovate. No cards.</div>
+        <div class="comp-ramp">→ Integrate, don't replace. Ramp sits on top</div>
+      </div>
+    </div>
+
+    <div class="callout" style="border-left: 4px solid var(--amber);">
+      <div class="callout-label">Cautionary tale</div>
+      <strong>Flex/Flexbase</strong> raised $225M to be "Ramp for Construction." Then pivoted to horizontal mid-market. Why? Credit risk? Unit economics? Or bigger horizontal opportunity? <strong>We need to understand before we commit.</strong>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: The Vertical Delta -->
+  <div class="slide" data-notes="Construction One saves 75% on AP time with horizontal Ramp. So what does the vertical add? Go back to Michael and Oscar. &#10;&#10;Michael opens Ramp and sees a flat dashboard. Same as every other customer. But he needs project-level budget health with CSI cost codes — concrete is 03000, electrical is 26000. Ramp's generic job-cost mapping works but doesn't speak construction's language. And he needs project-level AI intelligence: not just 'what you spent' but 'concrete is 12% above market — switch suppliers to save $28K.' &#10;&#10;Oscar's SMS receipt works in English. But he speaks Spanish. 30%+ of US construction workers are Hispanic. English-only receipt capture means the office adopts and the field doesn't. &#10;&#10;The vertical delta is six features. Each one tests a hypothesis. If they don't drive incremental adoption over horizontal, construction is a segment — not a vertical. &#10;&#10;Let me show you what this looks like in a prototype.">
+    <div class="slide-label">Slide 5 · The Gap</div>
+    <h2>The vertical delta.</h2>
+    <div class="thesis">What Michael and Oscar are missing from horizontal Ramp today.</div>
+
+    <table class="delta-table">
+      <thead>
+        <tr><th>What they have today</th><th>What the vertical adds</th><th>Who it's for</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Generic job-cost mapping</td><td><strong>CSI-specific auto-coding</strong></td><td>Michael — speaks construction's language</td></tr>
+        <tr><td>English-only SMS receipts</td><td><strong>Multilingual SMS (5 languages)</strong></td><td>Oscar — 30%+ Hispanic workforce</td></tr>
+        <tr><td>Flat dashboard for all users</td><td><strong>Role-based views</strong></td><td>Both — controller sees budgets, field worker sees receipts</td></tr>
+        <tr><td>Company-level spend insights</td><td><strong>Project-level AI intelligence</strong></td><td>Michael — "Concrete 12% above market, switch to save $28K"</td></tr>
+        <tr><td>Generic card controls</td><td><strong>Construction-specific controls</strong></td><td>Michael — project assignment, category limits, language pref</td></tr>
+        <tr><td>No project mgmt integrations</td><td><strong>Procore partnership (Phase 2)</strong></td><td>Both — 16K customers, auto-code from project data</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout accent">
+      <div class="callout-label">Key principle</div>
+      Each feature tests a hypothesis. If the vertical delta doesn't drive incremental adoption over horizontal, construction is a segment — not a vertical.
+    </div>
+
+    <a class="proto-cta" href="https://dbhat93.github.io/ramp-construction-prototype/" target="_blank">→ See the prototype</a>
+  </div>
+
+  <!-- SLIDE 6: Phasing -->
+  <div class="slide" data-notes="Phase 0 is already answered. We have the customers. We have the data. &#10;&#10;Phase 0.5 is: ship the vertical features to existing construction customers. No new contract, no procurement. Feature toggle. Measure incremental adoption in weeks. AI prototyping takes weeks, not months in today's world — Ruchi Aggarwal confirmed this. &#10;&#10;But here's the critical insight from Ruchi at BILL: first get the leading indicators from larger clients that we WILL get the business. If construction customers' patterns are already similar to their current flows in horizontal Ramp, it's merely a GTM expansion with light customization. Very different from going into a vertical wholeheartedly. &#10;&#10;If the vertical delta lands — controllers adopt CSI codes, field workers submit more receipts in Spanish — Phase 1 deepens. ERP integrations, answer the AR question. &#10;&#10;Phase 2 is Procore, mid-market GCs. Phase 3 is the full vertical decision. But we don't think about Phase 3 until Phase 1 data says construction genuinely needs different product.">
+    <div class="slide-label">Slide 6 · The Strategy</div>
+    <h2>Go-to-market & phasing.</h2>
+    <div class="thesis">Phase 0 is already underway. The vertical delta ships in weeks, not months.</div>
+
+    <div class="phase-row">
+      <div class="phase-card active-phase">
+        <div class="phase-label">Phase 0</div>
+        <div class="phase-title">Already underway</div>
+        <div class="phase-time">Now</div>
+        <div style="font-size: 13px; line-height: 1.5;">7+ customers on horizontal Ramp. Results: 75% AP reduction, $500K/yr savings</div>
+        <div class="phase-gate">✅ Validated — construction works on Ramp</div>
+      </div>
+      <div class="phase-card active-phase">
+        <div class="phase-label">Phase 0.5</div>
+        <div class="phase-title">Ship the delta</div>
+        <div class="phase-time">Weeks</div>
+        <div style="font-size: 13px; line-height: 1.5;">CSI coding, multilingual SMS, role-based views to existing customers</div>
+        <div class="phase-gate pending">Gate: >20% incremental adoption</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label">Phase 1</div>
+        <div class="phase-title">Land</div>
+        <div class="phase-time">Months 3-9</div>
+        <div style="font-size: 13px; line-height: 1.5;">AP automation, ERP integrations, answer the AR question</div>
+        <div class="phase-gate pending">Gate: 70%+ retention, 2+ expanding 25%+</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label">Phase 2</div>
+        <div class="phase-title">Expand</div>
+        <div class="phase-time">Months 9-18</div>
+        <div style="font-size: 13px; line-height: 1.5;">Mid-market GCs, Procore partnership, supplier Rewards</div>
+        <div class="phase-gate pending">Gate: &lt;30% ERP adoption = stay horizontal</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label">Phase 3</div>
+        <div class="phase-title">Deepen</div>
+        <div class="phase-time">Months 18-36</div>
+        <div style="font-size: 13px; line-height: 1.5;">Full vertical: retainage, certified payroll, Siteline acquisition decision</div>
+        <div class="phase-gate pending">Kill: still behaves like horizontal = no vertical</div>
+      </div>
+    </div>
+
+    <div class="callout accent">
+      <div class="callout-label">Why this is fast</div>
+      Phase 0.5 ships to existing customers — no new contract, no procurement. Feature toggle. AI prototyping takes <strong>weeks, not months</strong>. Measure incremental adoption immediately.
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Risks & Kill Signal -->
+  <div class="slide" data-notes="The biggest risk here isn't that construction is too hard. It's that we invest vertical engineering resources when horizontal Ramp with better GTM targeting would've worked just fine. That's why Phase 0 exists — strategic insurance. &#10;&#10;On acquisition risk — Ruchi flagged Divvy as a cautionary tale: 'There wasn't a clear idea of who their customers were.' Siteline's customers are subs billing GCs (AR). Ramp's would be the GC's finance team (AP). Same company, different buyer. Don't assume the customer bases merge. &#10;&#10;On the 2027 vision tension: does construction take us closer or further from AI CFO? Closer — if construction data widens the moat. New spending categories (materials, equipment, subs) make agents smarter across all verticals. But further — if we tie up a PM on vertical work when 45K existing customers need the AI CFO. Phase 0 tells us which world we're in. &#10;&#10;Kill signal: if construction customers behave like any other Ramp customer — same features, same usage, no vertical-specific adoption — there's no vertical. And that's a valid answer.">
+    <div class="slide-label">Slide 7 · The Risks</div>
+    <h2>Risks & kill signal.</h2>
+    <div class="thesis">The biggest risk isn't that construction is too hard. It's that we invest vertical resources when horizontal would've worked.</div>
+
+    <div class="risk-row">
+      <div class="risk-card">
+        <div class="risk-label">"They don't adopt tech"</div>
+        <div class="risk-mit">Card deployment ≠ ERP deployment. No implementation, just swipe. Buyer is the CFO, not the field worker.</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-label">"ERP integrations = years"</div>
+        <div class="risk-mit">Don't build until data says which ERPs. Most are on QuickBooks — already integrated.</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-label">"Flex tried and left"</div>
+        <div class="risk-mit">$225M raised, then pivoted horizontal. Understand why before we commit.</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-label">"Acquisition risk"</div>
+        <div class="risk-mit">Divvy lesson: "No clear idea who their customers were." Siteline = AR (subs). Ramp = AP (GCs). Different buyer.</div>
+      </div>
+    </div>
+
+    <div class="tension-grid">
+      <div class="callout" style="border-left: 4px solid var(--green);">
+        <div class="callout-label">Closer to 2027 AI CFO</div>
+        Construction = new spending data (materials, equipment, subs). More data categories → smarter agents → wider moat.
+      </div>
+      <div class="callout" style="border-left: 4px solid var(--red);">
+        <div class="callout-label">Further from 2027 AI CFO</div>
+        20 PMs, 1 per surface. A construction PM is a PM NOT building AI CFO for existing 45K customers.
+      </div>
+    </div>
+
+    <div class="callout red">
+      <div class="callout-label">Kill criteria</div>
+      <strong>If construction customers behave like any other Ramp customer — same features, same usage patterns, no vertical-specific adoption — then there's no vertical. And that's a valid answer.</strong>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Closing -->
+  <div class="slide closing-slide" data-notes="To close: Michael needs to see which project is bleeding. Oscar needs to text a receipt in Spanish and get back to work. Ramp already saves both of them time and money. The vertical delta makes it specific to construction. &#10;&#10;Phase 0 is validated. The delta ships in weeks. Every phase has a gate. And if construction behaves like horizontal, we learned cheaply and move on. &#10;&#10;Happy to take questions — or I can walk you through the prototype.">
+    <h2>The case for going deeper.</h2>
+    <ul class="clean takeaways">
+      <li>Michael needs budget visibility. Oscar needs receipt simplicity. Different product surfaces, one platform</li>
+      <li>7 customers already prove construction works on horizontal Ramp</li>
+      <li>The vertical delta ships in weeks — feature toggle, not new product</li>
+      <li>Every phase has a gate. Every gate has a kill signal</li>
+      <li>If construction behaves like horizontal, there's no vertical — and that's a valid answer</li>
+    </ul>
+    <div class="cta">Happy to take questions — or let me show you the prototype.</div>
+  </div>
+
+</div>
+
+<!-- Speaker Notes Panel -->
+<div class="notes-panel" id="notes"></div>
+
+<!-- Navigation -->
+<div class="nav">
+  <span class="counter" id="counter">1 / 9</span>
+  <div class="controls">
+    <button onclick="toggleNotes()" id="notesBtn">Notes (N)</button>
+    <button onclick="prevSlide()">← Prev</button>
+    <button onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<script>
+  let current = 0;
+  let notesVisible = false;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  const notesPanel = document.getElementById('notes');
+  const notesBtn = document.getElementById('notesBtn');
+
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, total - 1));
+    slides[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${total}`;
+    progress.style.width = `${((current + 1) / total) * 100}%`;
+    updateNotes();
+  }
+
+  function nextSlide() { showSlide(current + 1); }
+  function prevSlide() { showSlide(current - 1); }
+
+  function toggleNotes() {
+    notesVisible = !notesVisible;
+    notesPanel.classList.toggle('visible', notesVisible);
+    notesBtn.classList.toggle('active', notesVisible);
+    updateNotes();
+  }
+
+  function updateNotes() {
+    const note = slides[current].dataset.notes || 'No notes for this slide.';
+    notesPanel.innerHTML = `<div class="notes-title">Speaker Notes</div>${note.split('&#10;').join('<br>')}`;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+    if (e.key === 'n' || e.key === 'N') { toggleNotes(); }
+    if (e.key === 'f' || e.key === 'F') {
+      document.documentElement.requestFullscreen?.();
+    }
+  });
+
+  // Init
+  updateNotes();
+  progress.style.width = `${(1 / total) * 100}%`;
+</script>
+
+</body>
+</html>
