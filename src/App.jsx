@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { RoleProvider } from './context/RoleContext';
 import { LanguageProvider } from './context/LanguageContext';
 import Layout from './components/Layout';
@@ -26,7 +26,7 @@ export default function App() {
   return (
     <RoleProvider>
     <LanguageProvider>
-      <BrowserRouter>
+      <HashRouter>
         <CommandPalette />
         <Routes>
           <Route element={<Layout />}>
@@ -54,7 +54,7 @@ export default function App() {
             <Route path="/settings" element={<Placeholder />} />
           </Route>
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </LanguageProvider>
     </RoleProvider>
   );
