@@ -222,6 +222,97 @@ export const costReport = [
   { code: '-', description: 'Overhead/Other', budget: 580000, actual: 129000, committed: 0, forecast: 350000, variance: 230000 },
 ];
 
+export const projectIntelligence = {
+  'sunset-heights': [
+    {
+      type: 'anomaly',
+      severity: 'high',
+      title: 'Concrete costs 12% above market',
+      detail: 'Your last 10 commercial pours averaged $58/sq ft. Sunset Heights is running $65/sq ft — $7/sq ft above your own benchmark.',
+      action: 'Switch to Ferguson supplier #4412 to save ~$28K on remaining pours.',
+      savings: 28000,
+    },
+    {
+      type: 'anomaly',
+      severity: 'high',
+      title: 'Thermal & Moisture $17K over forecast',
+      detail: 'Code 07000 is the only line item over budget. Window seal vendor quoted 22% above last project.',
+      action: 'Request re-quote from 2 alternative vendors before next draw.',
+      savings: 17000,
+    },
+    {
+      type: 'underbid',
+      severity: 'medium',
+      title: 'Overhead allocation looks thin',
+      detail: 'Based on your last 10 commercial builds, overhead averages 18.3% of direct cost. This project\'s bid includes 15.8%. You may be underpriced by ~$47K.',
+      action: 'Review change order opportunities to recover margin before Phase 3.',
+      savings: 47000,
+    },
+    {
+      type: 'savings',
+      severity: 'low',
+      title: 'Steel structural 8% below market',
+      detail: 'Code 05000 is running $340K vs $370K market forecast. Current supplier pricing is favorable.',
+      action: 'Lock in current supplier pricing before Q3 rate adjustments.',
+      savings: 30000,
+    },
+    {
+      type: 'savings',
+      severity: 'low',
+      title: 'Equipment rental consolidation available',
+      detail: 'Sunbelt weekly rate is 15% lower than United Rentals for scissor lifts in this category.',
+      action: 'Consolidate remaining rentals to Sunbelt — saves ~$4,200 in mobilization fees.',
+      savings: 4200,
+    },
+  ],
+  'harbor-bridge': [
+    {
+      type: 'anomaly',
+      severity: 'high',
+      title: 'Budget exhausts at 82% completion',
+      detail: 'At current $142K/week burn rate, budget runs out 18% before project completion.',
+      action: 'Renegotiate steel PO or cut scope on Phase 3 deck overlay.',
+      savings: 0,
+    },
+    {
+      type: 'underbid',
+      severity: 'high',
+      title: 'Original bid underpriced by ~12%',
+      detail: 'Your last 8 bridge rehab jobs averaged 24.1% overhead. This bid included 21.3%. Davis-Bacon compliance costs were underestimated.',
+      action: 'Submit change order for unforeseen prevailing wage differential — $38K recoverable.',
+      savings: 38000,
+    },
+  ],
+  'metro-line': [
+    {
+      type: 'savings',
+      severity: 'low',
+      title: 'On track — 25% complete, 30% of budget spent',
+      detail: 'Spend rate is within 5% of plan. No cost anomalies detected across 6 active cost codes.',
+      action: 'No action needed. Next review at 40% completion milestone.',
+      savings: 0,
+    },
+  ],
+  'riverside-elementary': [
+    {
+      type: 'savings',
+      severity: 'low',
+      title: '5% under budget at 70% completion',
+      detail: 'Favorable lumber pricing and efficient crew scheduling driving savings.',
+      action: 'Release $55K contingency to accelerate punch list — close 2 weeks early.',
+      savings: 55000,
+    },
+    {
+      type: 'underbid',
+      severity: 'medium',
+      title: 'Future bid intelligence',
+      detail: 'Your last 10 school renovations averaged $142/sq ft total cost. This project is tracking at $131/sq ft — your bid was competitive but tight.',
+      action: 'For next school bid: price at $145/sq ft minimum to protect 6% net margin.',
+      savings: 0,
+    },
+  ],
+};
+
 export const roles = {
   controller: {
     name: 'Michael Scott',

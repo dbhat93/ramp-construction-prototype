@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { costReport, projects } from '../data';
+import { costReport, projects, projectIntelligence } from '../data';
 import { useLanguage } from '../context/LanguageContext';
-import { ChevronRight, Download, Printer, AlertTriangle } from 'lucide-react';
+import { ChevronRight, Download, Printer, AlertTriangle, Sparkles, TrendingDown, TrendingUp } from 'lucide-react';
 
 function fmt(n) {
   const abs = Math.abs(n);
@@ -141,6 +141,41 @@ export default function CostReport() {
           </tbody>
         </table>
       </div>
+
+      {/* Cost Intelligence */}
+      {(() => {
+        const insights = (projectIntelligence['sunset-heights'] || []).filter(i => i.severity === 'high');
+        if (!insights.length) return null;
+        return (
+          <div className="border border-ramp-border rounded-xl p-6 mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles size={18} className="text-amber-500" />
+              <h3 className="text-lg font-semibold text-gray-900">Cost Intelligence</h3>
+              <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{insights.length} alerts</span>
+            </div>
+            <div className="space-y-3">
+              {insights.map((insight, i) => {
+                const isUnderbid = insight.type === 'underbid';
+                return (
+                  <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${isUnderbid ? 'bg-red-50' : 'bg-amber-50'}`}>
+                    {isUnderbid ? <TrendingDown size={16} className="text-red-500 mt-0.5 shrink-0" /> : <AlertTriangle size={16} className="text-amber-500 mt-0.5 shrink-0" />}
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{insight.title}</p>
+                      <p className="text-xs text-gray-600 mt-0.5">{insight.action}</p>
+                    </div>
+                    {insight.savings > 0 && (
+                      <p className="ml-auto text-sm font-bold text-emerald-600 shrink-0">${insight.savings.toLocaleString()}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <Link to="/projects/sunset-heights" className="text-xs text-gray-500 hover:text-gray-700 mt-3 inline-block">
+              View all insights →
+            </Link>
+          </div>
+        );
+      })()}
 
       {/* Cash Position card */}
       <div className="border border-ramp-border rounded-xl p-6">

@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { projects, transactions } from '../data';
+import { projects, transactions, projectIntelligence } from '../data';
 import { useLanguage } from '../context/LanguageContext';
-import { ChevronRight, X, FileText, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import { ChevronRight, X, FileText, CheckCircle, AlertCircle, RefreshCw, Sparkles, TrendingDown, TrendingUp, AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
 
 function fmt(n) {
@@ -116,10 +116,12 @@ export default function ProjectDetail() {
   const [activeTab, setActiveTab] = useState('transactions');
   const pctSpent = Math.round((project.spent / project.budget) * 100);
 
+  const insights = projectIntelligence[id] || [];
   const tabs = [
     { key: 'transactions', label: t('transactionsTab') },
     { key: 'cost-breakdown', label: t('costBreakdownTab') },
     { key: 'team', label: t('teamTab') },
+    { key: 'insights', label: 'AI Insights', badge: insights.filter(i => i.severity === 'high').length },
   ];
 
   const tableHeaders = [
@@ -175,13 +177,17 @@ export default function ProjectDetail() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+            className={`pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-1.5 ${
               activeTab === tab.key
                 ? 'border-gray-900 text-gray-900'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
+            {tab.key === 'insights' && <Sparkles size={14} className="text-amber-500" />}
             {tab.label}
+            {tab.badge > 0 && (
+              <span className="bg-red-100 text-red-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{tab.badge}</span>
+            )}
           </button>
         ))}
       </div>
@@ -240,6 +246,66 @@ export default function ProjectDetail() {
         <div className="text-center py-16 text-gray-400">
           <p className="text-lg font-medium">{t('teamTab')}</p>
           <p className="text-sm mt-1">4 team members</p>
+        </div>
+      )}
+
+      {activeTab === 'insights' && (
+        <div className="space-y-4">
+          {/* Total savings banner */}
+          {(() => {
+            const totalSavings = insights.reduce((s, i) => s + (i.savings || 0), 0);
+            return totalSavings > 0 ? (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Sparkles size={20} className="text-emerald-600" />
+                  <div>
+                    <p className="text-sm font-semibold text-emerald-900">AI identified ${totalSavings.toLocaleString()} in potential savings</p>
+                    <p className="text-xs text-emerald-700 mt-0.5">{insights.length} insights across this project</p>
+                  </div>
+                </div>
+              </div>
+            ) : null;
+          })()}
+
+          {insights.map((insight, i) => {
+            const config = {
+              anomaly: { border: 'border-l-amber-500', bg: 'bg-amber-50', icon: AlertTriangle, iconColor: 'text-amber-600', label: 'COST ANOMALY' },
+              underbid: { border: 'border-l-red-500', bg: 'bg-red-50', icon: TrendingDown, iconColor: 'text-red-600', label: 'UNDERBIDDING RISK' },
+              savings: { border: 'border-l-emerald-500', bg: 'bg-emerald-50', icon: TrendingUp, iconColor: 'text-emerald-600', label: 'SAVINGS FOUND' },
+            }[insight.type];
+            const Icon = config.icon;
+            return (
+              <div key={i} className={`border border-ramp-border border-l-4 ${config.border} rounded-xl p-5`}>
+                <div className="flex items-start gap-3">
+                  <div className={`p-2 rounded-lg ${config.bg} shrink-0`}>
+                    <Icon size={18} className={config.iconColor} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`text-[10px] font-bold tracking-wider ${config.iconColor}`}>{config.label}</span>
+                      {insight.severity === 'high' && (
+                        <span className="bg-red-100 text-red-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">HIGH</span>
+                      )}
+                    </div>
+                    <h4 className="text-sm font-semibold text-gray-900 mb-1">{insight.title}</h4>
+                    <p className="text-sm text-gray-600 mb-3 leading-relaxed">{insight.detail}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="bg-gray-50 border border-ramp-border rounded-lg px-3 py-2 flex-1">
+                        <p className="text-xs text-gray-500 mb-0.5">Recommended action</p>
+                        <p className="text-sm text-gray-900">{insight.action}</p>
+                      </div>
+                      {insight.savings > 0 && (
+                        <div className="ml-4 text-right shrink-0">
+                          <p className="text-xs text-gray-500">Est. impact</p>
+                          <p className="text-lg font-bold text-emerald-600">${insight.savings.toLocaleString()}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
