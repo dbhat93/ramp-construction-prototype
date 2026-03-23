@@ -12,6 +12,14 @@ const activeIntegrations = [
     description: 'Cloud ERP with construction editions and Procore integration',
   },
   {
+    name: 'Foundation Software',
+    description: 'Purpose-built for specialty trades. Sync payroll, job costing, and AP automatically',
+  },
+  {
+    name: 'Jonas Construction',
+    description: 'MEP trades ERP ($5M-$100M). Sync service jobs, WIP, and project costs',
+  },
+  {
     name: 'NetSuite',
     description: 'Enterprise ERP integration',
   },
@@ -33,9 +41,9 @@ const constructionErp = [
     badge: 'Landing October 2026',
   },
   {
-    name: 'Foundation Software',
-    description: 'Purpose-built for specialty trades. Sync payroll, job costing, and AP.',
-    badge: 'Landing October 2026',
+    name: 'CMiC',
+    description: 'Enterprise-grade construction ERP. Highly customizable for large GCs.',
+    badge: 'Evaluating',
   },
 ];
 

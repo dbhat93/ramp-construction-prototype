@@ -194,7 +194,7 @@ function ProjectCard({ project, onClick, role, language, t }) {
       </div>
 
       {/* Completion */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="text-xs text-gray-500">Completion</div>
           <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -207,6 +207,27 @@ function ProjectCard({ project, onClick, role, language, t }) {
         </div>
         <span className="text-xs text-gray-400">{project.location}</span>
       </div>
+
+      {/* WIP + Days to Payment (controller only) */}
+      {role === 'controller' && (
+        <div className="flex items-center justify-between pt-2.5 border-t border-gray-100">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">WIP:</span>
+            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+              project.wipColor === 'green' ? 'bg-emerald-50 text-emerald-700' :
+              project.wipColor === 'amber' ? 'bg-amber-50 text-amber-700' :
+              'bg-red-50 text-red-700'
+            }`}>
+              {project.wip}
+            </span>
+          </div>
+          <Tooltip text={`Industry avg: 74 days. ${project.avgDaysToPayment < 74 ? 'Below average — healthy' : 'Above average — monitor closely'}`}>
+            <span className={`text-xs font-medium ${project.avgDaysToPayment > 74 ? 'text-red-600' : 'text-gray-500'}`}>
+              {project.avgDaysToPayment}d avg payment
+            </span>
+          </Tooltip>
+        </div>
+      )}
     </button>
   );
 }

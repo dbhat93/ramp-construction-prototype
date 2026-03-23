@@ -10,6 +10,9 @@ export const projects = [
     statusColor: 'green',
     location: 'Los Angeles, CA',
     pm: 'Dwight Schrute',
+    wip: 'On track',
+    wipColor: 'green',
+    avgDaysToPayment: 68,
   },
   {
     id: 'harbor-bridge',
@@ -22,6 +25,9 @@ export const projects = [
     statusColor: 'red',
     location: 'Long Beach, CA',
     pm: 'Dwight Schrute',
+    wip: 'Under-billed',
+    wipColor: 'amber',
+    avgDaysToPayment: 82,
   },
   {
     id: 'metro-line',
@@ -34,6 +40,9 @@ export const projects = [
     statusColor: 'green',
     location: 'Los Angeles, CA',
     pm: 'Dwight Schrute',
+    wip: 'Over-billed',
+    wipColor: 'red',
+    avgDaysToPayment: 91,
   },
   {
     id: 'riverside-elementary',
@@ -46,6 +55,9 @@ export const projects = [
     statusColor: 'blue',
     location: 'Riverside, CA',
     pm: 'Dwight Schrute',
+    wip: 'On track',
+    wipColor: 'green',
+    avgDaysToPayment: 58,
   },
 ];
 
